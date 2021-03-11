@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 const app = express()
 const HOST = '0.0.0.0'
-const PORT = 8000
+const PORT = 8092
 
 const index = require('./routes/index.js')
 
