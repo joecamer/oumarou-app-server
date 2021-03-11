@@ -7,7 +7,7 @@
     "start": "node app.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Sidik Faha <sidik@fanemtech.cf>",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",

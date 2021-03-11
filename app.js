@@ -3,6 +3,7 @@ const cors = require("cors")
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const app = express()
+const HOST = '0.0.0.0'
 const PORT = 8000
 
 const index = require('./routes/index.js')
@@ -21,6 +22,6 @@ app.disable("x-powered-by")
 app.use(cors())
 app.use(index)
 
-app.listen(PORT, () => {
-    console.log(`Application lancée sur a l'adresse http://localhost:${PORT}`)
+app.listen(PORT,HOST, () => {
+    console.log(`Application lancée sur a l'adresse http://${HOST}:${PORT}`)
 })
