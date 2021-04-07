@@ -9,48 +9,58 @@ class Model {
 
     all(){
         return new Promise((resolve, reject) => {
-            this.con.connect(err => {
-                if (err) reject(err)
+            const db = this.con
+            db.serialize(() => {
+                db.all(`SELECT * FROM ${this.table}`, (err, rows) => {
+                    if (err) reject(err)
+                    console.log(rows)
+                    resolve(rows)
+                })
             })
-
-            this.con.query(`SELECT * FROM ${this.table}`, (err, result) => {
-                if (err) reject(err)
-                resolve(result)
-            })
-
-            this.con.end()
+            db.close()
         })
     }
 
     find(id) {
         return new Promise((resolve,reject) => {
+            const db = this.con
             let sql = `SELECT * FROM ${this.table} WHERE \`${this.table}\`.`
             sql += !isNaN(parseInt(id)) ? `\`id\` = ${id}` : `\`${this.index}\` = "${id}"`;
-            this.con.connect(err => err ? reject(err) : null)
-
-            this.con.query(sql, (err, result) => {
-                if (err) reject(err)
-                resolve(result[0])
+            
+            db.serialize(() => {
+                db.each(sql, (err,row) => {
+                    if (err) reject(err)
+                    console.log(row)
+                    resolve(row)
+                })
             })
-            this.con.end()
+            db.close()
         })
     }
 
     create(values) {
-        let sql = `INSERT INTO ${this.table} SET ?`
+        let sql = `INSERT INTO ${this.table} VALUES (null,${values})`
         return new Promise((resolve, reject) => {
-            this.con.query(sql, values, (err, result) => {
-                if (err) {
+            const db = this.con
+            db.serialize(() => {
+                db.run(sql, err => {
                     reject(err)
-                }
-                resolve(result)
+                })
             })
-            this.con.end()
+            db.close()
+            resolve(true)
         })
     }
 
 }
 
+/**
+ * Création d'un nouveau model qui héritera du model principal ainsi que toutes ses méthodes
+ * Il suffit juste de le déclarer, appeler le constructeur du parent (super()) avec le nom de la table
+ * à laquelle il fait référence en paramètre et son CRUD sera dynamiquement généré.
+ * 
+ * Ne pas oublier d'exporter le model à la dernière ligne.
+ */
 class User extends Model {
 
     constructor() {
@@ -59,11 +69,4 @@ class User extends Model {
     }
 }
 
-class Devices extends Model {
-
-    constructor() {
-        super('devices')
-    }
-}
-
-module.exports = {User, Devices}
+module.exports = {User}

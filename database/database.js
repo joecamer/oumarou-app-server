@@ -1,20 +1,16 @@
-const mysql = require("mysql2");
+const sqlite3 = require("sqlite3").verbose()
+const path = require("path")
 
 class Database {
 
-    constructor(options = {host: 'localhost', user: 'nelson_user', password: 'nelsondefanemtech.cf@2000', database: 'nelson_database'}) {
-        this.host = options.host
-        this.user = options.user
-        this.password = options.password
-        this.database = options.database
+    constructor(name = path.join(__dirname, "database.sqlite")) {
+        this.database = name
     }
 
     getConnection() {
-        return mysql.createConnection({
-            host: this.host,
-            user: this.user,
-            password: this.password,
-            database: this.database,
+        return new sqlite3.Database(this.database, err => {
+            if (err) throw err
+            console.log(`Connecté à ${this.database}`)
         })
     }
 
